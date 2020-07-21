@@ -32,16 +32,17 @@ const RefreshTokenPlugin = makeExtendSchemaPlugin((_, {pgJwtSignOptions}) => ({
               LIMIT 1
             `,
             [email, password]
-          )
+          );
           if (!tokenPlaintext) { // unable to auth/invalid creds
             throw new Error("not authenticated");
           }
+          console.log('>>', tokenPlaintext)
           const { sub } = tokenPlaintext;
           
-          const accessToken = signToken(sub, pgJwtSignOptions, ACCESS_TOKEN_SECRET)
-          const refreshToken = signToken(sub, {...pgJwtSignOptions, expiresIn: '7 days'}, REFRESH_TOKEN_SECRET)
+          const accessToken = signToken(sub, pgJwtSignOptions, ACCESS_TOKEN_SECRET);
+          const refreshToken = signToken(sub, {...pgJwtSignOptions, expiresIn: '7 days'}, REFRESH_TOKEN_SECRET);
 
-          sendRefreshToken(context.res, refreshToken)
+          sendRefreshToken(context.res, refreshToken);
           return accessToken;
         } catch (e) {
           console.error(e);
@@ -52,11 +53,11 @@ const RefreshTokenPlugin = makeExtendSchemaPlugin((_, {pgJwtSignOptions}) => ({
   }
 }));
 
-export default RefreshTokenPlugin
+export default RefreshTokenPlugin;
 
 export const signToken = (sub, pgJwtSignOptions, secret) => {
   const token = {
-    sub, 
+    sub,                        // the sub, aka 'subscriber id', comes from account.person_id
     role: 'demo_authenticated'  // _must_ match the role in SQL as defined by generate_token_plaintext() function
   }
 
@@ -77,5 +78,5 @@ export const sendRefreshToken = (res, token) => {
     httpOnly: true,
     sameSite: true,       // if you're on a single origin, this may help prevent CSRF attacks
     path: "/access_token"
-  })
+  });
 }

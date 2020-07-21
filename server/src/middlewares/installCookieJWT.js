@@ -7,9 +7,9 @@ const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env
 
 const installCookieJWT = (app) => {
   app.use(cookieParser());
-  app.post('/access_token', async (req, res) => {
-    const rootPgPool = app.get('rootPgPool')
-    const token = req.cookies.qid  // `qid` is arbitrary; must match whatever cookie name we set in sendRefreshToken()
+  app.post('/access_token', async (req, res, next) => {
+    const rootPgPool = app.get('rootPgPool');
+    const token = req.cookies.qid;  // `qid` is arbitrary; must match whatever cookie name we set in sendRefreshToken()
     if (token) {
       try {
         const payload = verify(token, REFRESH_TOKEN_SECRET, { algorithms: ['HS256' ]});
@@ -19,16 +19,15 @@ const installCookieJWT = (app) => {
             WHERE person_id = $1
             LIMIT 1
           `, [payload.sub]
-        )
+        );
         if (rows.length) {
           const { sub } = rows[0];
           // go ahead and refresh refresh token while we're here
           sendRefreshToken(res, signToken(sub, {expiresIn: '7 days'}, REFRESH_TOKEN_SECRET));
-          return res.send({ ok: true, access_token: signToken(sub, {}, ACCESS_TOKEN_SECRET) })
+          return res.send({ ok: true, access_token: signToken(sub, {}, ACCESS_TOKEN_SECRET) });
         }
       } catch (err) {
-        // TODO: investigate if this returns a 401
-        throw new Error(err)
+        next(err)
       }
     };
 
