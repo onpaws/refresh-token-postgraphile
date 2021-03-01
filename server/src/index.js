@@ -19,7 +19,7 @@ const main = async () => {
   app.listen(4000, () => {
     console.log(`🚀 GraphQL endpoint ready at http://localhost:4000/graphql`);
     console.log(`🚀 UI ready at http://localhost:4000/graphiql`);
-    console.log(`If you haven't already, please run the React FE from refresh-token-postraphile/fe/, which will make...`);
+    console.log(`If you haven't already, please run the React FE from refresh-token-postraphile/client/, which will make...`);
     console.log(`🚀 React FE ready at http://localhost:4000/`);
 });
 }

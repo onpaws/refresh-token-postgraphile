@@ -15,7 +15,7 @@
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "http-proxy": "^1.18.1",
-    "postgraphile": "^4.9.2"
+    "postgraphile": "^4.11.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
