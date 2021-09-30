@@ -33,6 +33,15 @@ COMMENT ON COLUMN demo_private.person_account.person_id is 'The id of the person
 COMMENT ON COLUMN demo_private.person_account.email is 'The email address of the person';
 COMMENT ON COLUMN demo_private.person_account.password_hash is 'An opaque hash of the person’s password';
 
+
+-- Define current_person() before we call it in `todo`'s CREATE TABLE
+CREATE OR REPLACE FUNCTION demo_public.current_person() RETURNS demo_public.person as $$
+  SELECT * 
+  FROM demo_public.person
+  WHERE id = NULLIF(current_setting('jwt.claims.sub', true), '')::UUID
+$$ LANGUAGE sql STABLE;
+COMMENT ON FUNCTION demo_public.current_person() is 'Gets the person who was identified by our JWT';
+
 CREATE TABLE demo_public.todo (
   id          UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
   todo        TEXT NOT NULL,
@@ -103,14 +112,6 @@ END;
 $$ LANGUAGE plpgsql STRICT SECURITY DEFINER;
 COMMENT ON FUNCTION demo_private.generate_token_plaintext IS '@omit\nModified version of authenticate() as seen in the docs.\n\nDeliberately excluded from GQL and public schema. To login please call authenticate() as defined in `refreshTokenPlugin`.';
 
-CREATE OR REPLACE FUNCTION demo_public.current_person() RETURNS demo_public.person as $$
-  SELECT * 
-  FROM demo_public.person
-  WHERE id = NULLIF(current_setting('jwt.claims.sub', true), '')::UUID
-$$ LANGUAGE sql STABLE;
-COMMENT ON FUNCTION demo_public.current_person() is 'Gets the person who was identified by our JWT';
-
-
 GRANT USAGE ON SCHEMA demo_public TO demo_anonymous, demo_authenticated;
 -- allows anonymous and auth'd users to know the schema exists
 -- note we did not grant usage to the private schema
@@ -162,3 +163,8 @@ CREATE POLICY delete_todo ON demo_public.todo FOR DELETE TO demo_authenticated
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE demo_public.todo TO demo_authenticated;
 -- only logged in users can edit todos
+
+
+-- Create a default user. intended to pair with the user that happens to be Login.js <input>'s default.
+-- Alternatively, call `registerPerson` GQL mutation
+SELECT demo_public.register_person('bob', 'bob', 'bob@bob.com', 'bob@bob.com');
