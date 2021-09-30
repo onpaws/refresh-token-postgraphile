@@ -14,7 +14,7 @@ const App = () => {
         <Login />
         <hr />
         <h4>Todos</h4>
-        <h6>(must be logged in to see)</h6>
+        <h6>(must be logged in to see; click to show new todos)</h6>
         <button onClick={() => toggleTodos(!showTodos)}>toggle todos</button>
         {showTodos && <Todos />}
         <CreateTodo />
