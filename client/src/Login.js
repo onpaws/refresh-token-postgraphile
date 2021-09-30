@@ -24,9 +24,9 @@ const Login = () => {
         const response = await login({
           variables: { email, password }
         });
-
-        if (response) {
-          const { data: { authenticate: jwtToken } } = response;
+        const { data: { authenticate: jwtToken } } = response;
+        
+        if (jwtToken) {
           setAccessToken(jwtToken);
           setEmail('');
           setPassword('');
