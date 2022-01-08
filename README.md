@@ -24,10 +24,8 @@ I'm trying to improve the story on _issuing_ with stronger browser security in m
     (from another terminal)
     $ cd client; yarn; yarn start
     
-  - *Heads up!* When starting the frontend, CRA will open http://localhost:3000 which we don't want (CORS).
-
-    Please point your browser instead to http://localhost:4000 
-
+  - When starting the frontend, CRA will open http://localhost:3000 requests to the postgraphile server will be proxied by the webpack dev server.
+  
 ## "Stateless sessions"
 Because JWTs are stateless, you may be able to drop centralized session storage (Redis/DB). This project pushes the token state out strictly to live on the client only. #war-on-state
 
@@ -96,10 +94,6 @@ So there you have it, `refresh_token` based auth for PostGraphile!
    - That is one reason why we use the lower 15 minute `access_token` lifetime. 
  - If you want to revoke a user's token, ensure `generate_token_plaintext()` doesn't return a token for that user, and wait 15 minutes. That's it. (Deleting the user would do the trick, as could setting up some kind of eg. `active` flag if you wanted to keep the record.)
  - In an emergency you could in theory rotate the JWT secret(s), just be aware this would impact all users.<a href="#note1" id="note1ref"><sup>1</sup></a>
-
-## I'm getting errors
-This project uses `http-proxy` to put everything into a single origin to punt on tedious CORS config.
-*Make sure you're pulling up the FE via http://localhost:4000.*
 
 ## Useful operations to copypasta
 ```graphql
