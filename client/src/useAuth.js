@@ -29,7 +29,7 @@ const useProvideAuth = () => {
   useEffect(() => {
     // intended to be called when <App /> mounts, normally init time. 
     // If a valid refresh_token is in the cookie, we fetch and store an access_token
-    fetch("http://localhost:4000/access_token", {
+    fetch("/access_token", {
       method: "POST",
       credentials: "include"
     }).then(async response => {

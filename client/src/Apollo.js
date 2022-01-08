@@ -34,7 +34,7 @@ const requestLink = new ApolloLink(
 );
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: '/graphql',
   credentials: 'include'
 });
 
@@ -70,7 +70,7 @@ const tokenLink = new TokenRefreshLink({
       return false;
     }
   },
-  fetchAccessToken: () => fetch("http://localhost:4000/access_token", {
+  fetchAccessToken: () => fetch("/access_token", {
     method: "POST",
     credentials: "include"
   }),
